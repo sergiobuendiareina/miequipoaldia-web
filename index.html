@@ -42,6 +42,9 @@ h1,h2,h3{font-family:BCI,Inter,sans-serif;font-weight:800;margin:0;line-height:.
 .marca b{font:800 24px BCI;color:var(--tinta);white-space:nowrap}
 .marca b span{color:var(--verde)}
 .nav .btn{padding:12px 20px;font-size:15px}
+.nav-d{display:flex;gap:10px}
+.miclub{background:#fff;color:var(--verde)}
+.miclub[hidden]{display:none}
 .hero-g{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding-top:20px}
 .hero h1{font-size:clamp(60px,9vw,96px)}
 .hero h1 span{color:var(--amarillo)}
@@ -113,7 +116,8 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
 @media (max-width:560px){
   .wrap{padding:0 16px}
   .marca b{font-size:19px}.marca img{height:32px}
-  .nav .btn{display:none}
+  .nav .btn-am{display:none}
+  .nav .miclub{padding:10px 14px;font-size:14px}
   .f,.pasos{grid-template-columns:1fr}
   .tels{gap:14px}
   .tels figcaption{font-size:18px}
@@ -129,7 +133,7 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
   <div class="wrap">
     <nav class="nav">
       <a class="marca" href="#"><img src="assets/logo.png" alt=""><b>MI EQUIPO <span>AL DÍA</span></b></a>
-      <a class="btn btn-am" href="#probar">Quiero probarla</a>
+      <div class="nav-d"><a class="btn miclub" id="miclub" href="#" hidden>Ir a mi equipo →</a><a class="btn btn-am" href="#probar">Quiero probarla</a></div>
     </nav>
     <div class="hero-g">
       <div>
@@ -243,6 +247,8 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
 const SUPABASE_URL='https://orxdobcorsqejuecpouc.supabase.co';
 const SUPABASE_KEY='sb_publishable_znScSXTgDv7wnFtZwNfjLw_shUPDfzl';
 document.getElementById('anio').textContent=new Date().getFullYear();
+try{const c=JSON.parse(localStorage.getItem('mead_ultimo_club')||'null');
+  if(c&&/^[a-z0-9-]+$/.test(c.slug)){const a=document.getElementById('miclub');a.href='/'+c.slug+'/';a.textContent='Ir a '+(c.nombre||'mi equipo')+' →';a.hidden=false}}catch(e){}
 const f=document.getElementById('form'),err=document.getElementById('err'),btn=document.getElementById('enviar');
 f.addEventListener('submit',async e=>{
   e.preventDefault();err.style.display='none';
