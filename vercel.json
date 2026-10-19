@@ -1,10 +1,35 @@
 {
   "rewrites": [
-    { "source": "/marianistas/", "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html" },
-    { "source": "/marianistas", "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html" },
-    { "source": "/marianistas/:path+", "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/:path+" }
+    {
+      "source": "/demo/",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+    },
+    {
+      "source": "/demo",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+    },
+    {
+      "source": "/marianistas/",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+    },
+    {
+      "source": "/marianistas",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+    },
+    {
+      "source": "/marianistas/:path+",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/:path+"
+    }
   ],
   "headers": [
-    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800"
+        }
+      ]
+    }
   ]
 }
