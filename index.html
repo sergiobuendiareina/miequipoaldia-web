@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mi Equipo Al Día · La app del míster de fútbol base</title>
+<meta name="description" content="Calendario, clasificación, modo partido, minutos y estadísticas de tu equipo de fútbol base, en el móvil. Sin papeles ni grupos de WhatsApp.">
+<meta name="theme-color" content="#1B7A43">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta property="og:title" content="Mi Equipo Al Día">
+<meta property="og:description" content="Gestiona. Dirige. Gana. La pizarra del míster, ahora en el móvil.">
+<meta property="og:image" content="https://miequipoaldia.com/assets/og.jpg">
+<meta property="og:url" content="https://miequipoaldia.com">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:BCI;src:url(assets/bci.woff) format("woff");font-display:swap}
+@font-face{font-family:BC;src:url(assets/bc7.woff) format("woff");font-display:swap}
+:root{--verde:#1B7A43;--verde2:#14603A;--amarillo:#FFD23F;--tinta:#0E1B2E;--suave:#F4FAF6;--gris:#5B6B7F}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--tinta);background:#fff;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.btn{display:inline-block;padding:16px 26px;border-radius:14px;font-weight:800;font-size:17px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px #0002}
+.btn-am{background:var(--amarillo);color:var(--tinta)}
+.ph{border-radius:34px;border:10px solid #0b0f17;box-shadow:0 30px 60px #0005;overflow:hidden;background:#fff;aspect-ratio:9/19.5}
+.ph img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.ph img.fit{object-fit:contain}
+h1,h2,h3{font-family:BCI,Inter,sans-serif;font-weight:800;margin:0;line-height:.95}
+
+/* HERO */
+.hero{background:var(--verde) url(assets/campo.svg) right center/cover no-repeat;color:#fff;padding-bottom:70px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;gap:12px}
+.marca{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 14px;border-radius:14px;text-decoration:none}
+.marca img{height:40px}
+.marca b{font:800 24px BCI;color:var(--tinta);white-space:nowrap}
+.marca b span{color:var(--verde)}
+.nav .btn{padding:12px 20px;font-size:15px}
+.hero-g{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding-top:20px}
+.hero h1{font-size:clamp(60px,9vw,96px)}
+.hero h1 span{color:var(--amarillo)}
+.hero p{font-size:20px;line-height:1.5;max-width:520px;color:#e3f4e8;margin:22px 0 30px}
+.hero .ph{width:290px;margin:0 auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chips span{background:#ffffff1f;border:1px solid #ffffff33;padding:7px 12px;border-radius:99px;font-size:13.5px;font-weight:500}
+
+/* SECCIONES */
+section{padding:80px 0}
+.tit{font-size:clamp(36px,5vw,50px);margin-bottom:12px}
+.sub{font-size:18px;color:var(--gris);max-width:640px;line-height:1.5;margin:0 0 36px}
+.f{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fc{border-radius:18px;padding:24px;background:var(--suave)}
+.fc .ic{font-size:28px}
+.fc b{display:block;font-size:18px;margin:10px 0 6px}
+.fc span{font-size:15px;color:#34465c;line-height:1.5}
+
+.galeria{background:var(--tinta);color:#fff}
+.galeria .sub{color:#b8c4d4}
+.tels{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.tels figure{margin:0;text-align:center}
+.tels figcaption{margin-top:14px;font:800 22px BCI;color:var(--amarillo);letter-spacing:.3px}
+
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:p}
+.paso{border:2px solid #E3EEE7;border-radius:18px;padding:26px;position:relative}
+.paso:before{counter-increment:p;content:counter(p);display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--verde);color:#fff;font:800 26px BCI;margin-bottom:14px}
+.paso b{display:block;font-size:19px;margin-bottom:6px}
+.paso span{color:#34465c;line-height:1.5;font-size:15.5px}
+.paso code{background:var(--suave);padding:2px 7px;border-radius:6px;font-size:14px;color:var(--verde2);font-weight:700}
+
+/* FORM */
+.probar{background:var(--verde) url(assets/campo.svg) right center/cover no-repeat;color:#fff}
+.probar-g{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.probar .sub{color:#e3f4e8}
+form{background:#fff;color:var(--tinta);border-radius:22px;padding:28px;box-shadow:0 30px 60px #0003}
+label{display:block;font-weight:700;font-size:14px;margin:0 0 6px}
+.campo{margin-bottom:16px}
+input,select,textarea{width:100%;padding:13px 14px;border:2px solid #DCE6E0;border-radius:12px;font:500 16px Inter,sans-serif;color:var(--tinta);background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+form .btn{width:100%;margin-top:6px}
+.trampa{position:absolute;left:-9999px}
+.aviso{font-size:12.5px;color:var(--gris);margin:12px 0 0;line-height:1.4}
+.ok{display:none;text-align:center;padding:30px 10px}
+.ok h3{font-size:40px;color:var(--verde);margin-bottom:8px}
+.err{color:#C0362C;font-weight:700;font-size:14px;margin-top:10px;display:none}
+.lista{list-style:none;padding:0;margin:0}
+.lista li{padding:10px 0 10px 34px;position:relative;font-size:17px}
+.lista li:before{content:"✓";position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:50%;background:var(--amarillo);color:var(--tinta);display:grid;place-items:center;font-weight:800;font-size:14px}
+
+/* FOOTER */
+footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
+.foot-g{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+.redes{display:flex;gap:12px;flex-wrap:wrap}
+.redes a{display:flex;align-items:center;gap:10px;text-decoration:none;background:#ffffff12;border:1px solid #ffffff22;padding:10px 16px;border-radius:12px;font-weight:700;color:#fff}
+.redes a:hover{background:#ffffff22}
+.redes small{display:block;font-weight:500;color:#9fb0c4;font-size:12px}
+.redes svg{width:22px;height:22px;flex:none}
+.legal{border-top:1px solid #ffffff1a;margin-top:30px;padding-top:20px;font-size:13px;color:#8496ab}
+
+@media (max-width:900px){
+  .hero-g,.probar-g{grid-template-columns:1fr}
+  .hero{background-position:70% center}
+  .hero .ph{width:240px;margin-top:20px}
+  .f,.pasos{grid-template-columns:1fr 1fr}
+  .tels{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .marca b{font-size:19px}.marca img{height:32px}
+  .nav .btn{display:none}
+  .f,.pasos{grid-template-columns:1fr}
+  .tels{gap:14px}
+  .tels figcaption{font-size:18px}
+  section{padding:60px 0}
+  .hero p{font-size:18px}
+  .dos{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="marca" href="#"><img src="assets/logo.png" alt=""><b>MI EQUIPO <span>AL DÍA</span></b></a>
+      <a class="btn btn-am" href="#probar">Quiero probarla</a>
+    </nav>
+    <div class="hero-g">
+      <div>
+        <h1>Gestiona.<br>Dirige.<br><span>Gana.</span></h1>
+        <p>La pizarra del míster, ahora en el móvil. Lleva tu equipo de fútbol base al día sin papeles ni grupos de WhatsApp.</p>
+        <a class="btn btn-am" href="#probar">Quiero probarla →</a>
+        <div class="chips"><span>⚽ Fútbol base y aficionado</span><span>📲 Se instala como una app</span><span>🆓 Gratis en la fase de prueba</span></div>
+      </div>
+      <div><div class="ph"><img src="assets/cambios.webp" alt="Modo partido: cambios desde la banda"></div></div>
+    </div>
+  </div>
+</header>
+
+<section id="funciones">
+  <div class="wrap">
+    <h2 class="tit">Todo lo que necesitas en la banda</h2>
+    <p class="sub">Pensada por y para entrenadores y delegados. Lo de siempre, pero ordenado y en el bolsillo.</p>
+    <div class="f">
+      <div class="fc"><div class="ic">📅</div><b>Calendario</b><span>Entrenos y partidos de la semana de un vistazo, con hora y campo.</span></div>
+      <div class="fc"><div class="ic">🏆</div><b>Clasificación</b><span>Tu liga siempre al día, con resultados y puntos de todos los equipos.</span></div>
+      <div class="fc"><div class="ic">📱</div><b>Modo partido</b><span>Goles, tarjetas y cambios por ventanas, apuntados desde la banda en segundos.</span></div>
+      <div class="fc"><div class="ic">⏱️</div><b>Minutos</b><span>Se calculan solos para cada jugador a partir de la alineación y los cambios.</span></div>
+      <div class="fc"><div class="ic">📊</div><b>Estadísticas</b><span>Goleadores, tarjetas, convocatorias y asistencia a entrenos.</span></div>
+      <div class="fc"><div class="ic">💸</div><b>Multas</b><span>Las cuentas del vestuario, claras y sin discusiones.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="galeria">
+  <div class="wrap">
+    <h2 class="tit">Así se ve</h2>
+    <p class="sub">Diseñada para usarse con una mano, en el campo, con prisa y con frío.</p>
+    <div class="tels">
+      <figure><div class="ph"><img src="assets/cambios.webp" alt="Cambios" loading="lazy"></div><figcaption>CAMBIOS</figcaption></figure>
+      <figure><div class="ph"><img src="assets/gol.webp" alt="Gol" loading="lazy"></div><figcaption>GOLES</figcaption></figure>
+      <figure><div class="ph"><img class="fit" src="assets/clasificacion.webp" alt="Clasificación" loading="lazy"></div><figcaption>CLASIFICACIÓN</figcaption></figure>
+      <figure><div class="ph"><img class="fit" src="assets/calendario.webp" alt="Calendario" loading="lazy"></div><figcaption>CALENDARIO</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="como">
+  <div class="wrap">
+    <h2 class="tit">Cómo funciona</h2>
+    <p class="sub">Cada equipo tiene su propia dirección. La abres una vez, la añades a tu pantalla de inicio y listo.</p>
+    <div class="pasos">
+      <div class="paso"><b>Tu equipo, tu enlace</b><span>Te damos una dirección propia, por ejemplo <code>miequipoaldia.com/tuequipo</code>.</span></div>
+      <div class="paso"><b>Instálala en el móvil</b><span>Desde el navegador, “Añadir a pantalla de inicio”. Aparece con su icono, como cualquier app.</span></div>
+      <div class="paso"><b>Ábrela y a jugar</b><span>Entra directamente en tu equipo, sin buscarlo ni volver a iniciar sesión cada día.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="probar" id="probar">
+  <div class="wrap probar-g">
+    <div>
+      <h2 class="tit">¿Quieres probarla con tu equipo?</h2>
+      <p class="sub">Estamos abriendo la app a los primeros clubes. Déjanos tus datos y te escribimos para montarte tu equipo.</p>
+      <ul class="lista">
+        <li>Te preparamos el equipo con tu plantilla</li>
+        <li>Calendario y clasificación de tu liga</li>
+        <li>Gratis durante la fase de prueba</li>
+      </ul>
+    </div>
+    <form id="form" novalidate>
+      <div id="campos">
+        <div class="campo"><label for="nombre">Tu nombre</label><input id="nombre" name="nombre" required maxlength="80" autocomplete="name"></div>
+        <div class="campo"><label for="club">Club y equipo</label><input id="club" name="club" required maxlength="120" placeholder="Ej.: CD Ejemplo Juvenil A"></div>
+        <div class="dos">
+          <div class="campo"><label for="categoria">Categoría</label>
+            <select id="categoria" name="categoria">
+              <option value="">Elige…</option>
+              <option>Prebenjamín</option><option>Benjamín</option><option>Alevín</option><option>Infantil</option><option>Cadete</option><option>Juvenil</option><option>Senior / Aficionado</option><option>Fútbol sala</option><option>Otra</option>
+            </select></div>
+          <div class="campo"><label for="rol">Eres…</label>
+            <select id="rol" name="rol">
+              <option value="">Elige…</option>
+              <option>Entrenador/a</option><option>Delegado/a</option><option>Coordinador/a</option><option>Jugador/a</option><option>Familia</option><option>Otro</option>
+            </select></div>
+        </div>
+        <div class="campo"><label for="email">Email</label><input id="email" name="email" type="email" required maxlength="120" autocomplete="email"></div>
+        <div class="campo"><label for="telefono">Teléfono <span style="font-weight:500;color:#5B6B7F">(opcional)</span></label><input id="telefono" name="telefono" type="tel" maxlength="20" autocomplete="tel"></div>
+        <input class="trampa" name="web" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn-am" type="submit" id="enviar">Quiero probarla →</button>
+        <div class="err" id="err"></div>
+        <p class="aviso">Solo usaremos tus datos para contactarte sobre Mi Equipo Al Día. Puedes pedirnos que los borremos cuando quieras.</p>
+      </div>
+      <div class="ok" id="ok"><h3>¡Recibido! ⚽</h3><p>Te escribimos muy pronto. Mientras tanto, síguenos en redes para ver novedades.</p></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-g">
+      <a class="marca" href="#"><img src="assets/logo.png" alt=""><b>MI EQUIPO <span>AL DÍA</span></b></a>
+      <div class="redes">
+        <a href="https://www.instagram.com/miequipoaldia/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          <span>Instagram<small>@miequipoaldia</small></span></a>
+        <a href="https://www.tiktok.com/@miequipoaldia" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+          <span>TikTok<small>@miequipoaldia</small></span></a>
+      </div>
+    </div>
+    <div class="legal">© <span id="anio">2026</span> Mi Equipo Al Día · Hecho en Jerez para el fútbol base</div>
+  </div>
+</footer>
+
+<script>
+const SUPABASE_URL='https://orxdobcorsqejuecpouc.supabase.co';
+const SUPABASE_KEY='sb_publishable_znScSXTgDv7wnFtZwNfjLw_shUPDfzl';
+document.getElementById('anio').textContent=new Date().getFullYear();
+const f=document.getElementById('form'),err=document.getElementById('err'),btn=document.getElementById('enviar');
+f.addEventListener('submit',async e=>{
+  e.preventDefault();err.style.display='none';
+  const d=Object.fromEntries(new FormData(f));
+  if(d.web)return; // bot
+  if(!d.nombre.trim()||!d.club.trim()||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){
+    err.textContent='Rellena nombre, club y un email válido.';err.style.display='block';return}
+  btn.disabled=true;btn.textContent='Enviando…';
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/interesados',{method:'POST',
+      headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({nombre:d.nombre.trim(),club:d.club.trim(),categoria:d.categoria||null,rol:d.rol||null,email:d.email.trim(),telefono:d.telefono.trim()||null})});
+    if(!r.ok)throw new Error(r.status);
+    document.getElementById('campos').style.display='none';document.getElementById('ok').style.display='block';
+  }catch(x){
+    err.textContent='No se pudo enviar. Prueba otra vez o escríbenos por Instagram.';err.style.display='block';
+    btn.disabled=false;btn.textContent='Quiero probarla →';
+  }
+});
+</script>
+</body>
+</html>
