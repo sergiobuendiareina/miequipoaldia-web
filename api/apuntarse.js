@@ -36,6 +36,7 @@ module.exports = async (req, res) => {
   if (!r.ok) return res.status(502).json({ ok: false, error: 'No se pudo guardar' })
 
   // El aviso no debe impedir que el registro quede guardado
+  let aviso = 'sin RESEND_API_KEY'
   if (process.env.RESEND_API_KEY) {
     const lineas = [
       `Nombre: ${fila.nombre}`,
@@ -46,20 +47,22 @@ module.exports = async (req, res) => {
       `Teléfono: ${fila.telefono || '-'}`,
     ]
     try {
-      await fetch('https://api.resend.com/emails', {
+      const r2 = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY.trim()}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'Mi Equipo Al Día <onboarding@resend.dev>',
-          to: [process.env.AVISO_EMAIL || 'miequipoaldia@gmail.com'],
+          to: [(process.env.AVISO_EMAIL || 'miequipoaldia@gmail.com').trim()],
           reply_to: fila.email,
           subject: `⚽ Nuevo interesado: ${fila.club}`,
           text: `Alguien quiere probar Mi Equipo Al Día:\n\n${lineas.join('\n')}\n\nResponde a este email para escribirle directamente.`,
         }),
       })
-    } catch {
-      // sin aviso, pero guardado
+      aviso = r2.ok ? 'enviado' : `error ${r2.status}: ${(await r2.text()).slice(0, 200)}`
+    } catch (e) {
+      aviso = `error: ${e.message}`
     }
   }
-  return res.status(200).json({ ok: true })
+  console.log('Aviso por email:', aviso)
+  return res.status(200).json({ ok: true, aviso })
 }
