@@ -31,7 +31,10 @@ module.exports = async (req, res) => {
   if (!yo.ok) return res.status(401).json({ ok: false, error: 'Sesión no válida' })
   const usuario = await yo.json()
   const sa = await rest(`/rest/v1/superadmins?select=user_id&user_id=eq.${usuario.id}`)
-  if (!sa.ok || !sa.datos?.length) return res.status(403).json({ ok: false, error: 'Solo el superadmin puede dar de alta clubes' })
+  const clave = (process.env.SUPABASE_SECRET_KEY || '').trim()
+  if (!clave.startsWith('sb_secret_')) return res.status(500).json({ ok: false, error: `La SUPABASE_SECRET_KEY de Vercel no es la secreta: empieza por "${clave.slice(0, 12)}…" y debe empezar por "sb_secret_"` })
+  if (!sa.ok) return res.status(500).json({ ok: false, error: `Supabase rechaza la SUPABASE_SECRET_KEY de Vercel (${sa.status}). Cópiala de nuevo, sin comillas ni espacios.` })
+  if (!sa.datos?.length) return res.status(403).json({ ok: false, error: 'Solo el superadmin puede dar de alta clubes' })
 
   // 2) Datos del club
   let b = req.body
