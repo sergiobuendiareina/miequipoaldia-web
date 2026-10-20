@@ -19,6 +19,14 @@
     {
       "source": "/marianistas/:path+",
       "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/:path+"
+    },
+    {
+      "source": "/:club([a-z0-9-]{2,40})/",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+    },
+    {
+      "source": "/:club([a-z0-9-]{2,40})",
+      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
     }
   ],
   "headers": [
