@@ -125,6 +125,33 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
   .hero p{font-size:18px}
   .dos{grid-template-columns:1fr}
 }
+
+/* PRECIOS Y FAQ */
+.nav-l{color:#fff;font-weight:700;text-decoration:none;align-self:center;padding:0 8px}
+.precios{background:var(--suave)}
+.planes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.plan{background:#fff;border:2px solid #E3EEE7;border-radius:22px;padding:28px;position:relative;display:flex;flex-direction:column}
+.plan.dest{border-color:var(--verde);box-shadow:0 24px 50px #1b7a4326;transform:translateY(-8px)}
+.etq{position:absolute;top:-14px;left:24px;background:var(--amarillo);color:var(--tinta);font-weight:800;font-size:13px;padding:5px 12px;border-radius:99px}
+.pn{font:800 26px BCI;color:var(--verde)}
+.pp{font:800 64px BCI;line-height:1;margin:10px 0 16px}
+.pp small{font:500 15px Inter;color:var(--gris);margin-left:8px}
+.lista2{list-style:none;padding:0;margin:0 0 20px;flex:1}
+.lista2 li{padding:7px 0 7px 26px;position:relative;font-size:15.5px;color:#34465c}
+.lista2 li:before{content:"✓";position:absolute;left:0;color:var(--verde);font-weight:800}
+.plan .btn{text-align:center}
+.nota{color:var(--gris);font-size:15px;margin:26px 0 0}
+.nota a{color:var(--verde);font-weight:700}
+.faqs{display:grid;gap:12px;max-width:820px}
+.faqs details{border:2px solid #E3EEE7;border-radius:16px;padding:18px 22px;background:#fff}
+.faqs summary{font-weight:800;font-size:17px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faqs summary::-webkit-details-marker{display:none}
+.faqs summary:after{content:"+";color:var(--verde);font-size:22px;line-height:1}
+.faqs details[open] summary:after{content:"–"}
+.faqs p{margin:12px 0 0;color:#34465c;line-height:1.6}
+.faqs a{color:var(--verde);font-weight:700}
+@media (max-width:900px){.planes{grid-template-columns:1fr}.plan.dest{transform:none}}
+@media (max-width:560px){.nav-l{display:none}.pp{font-size:54px}}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -134,14 +161,14 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
   <div class="wrap">
     <nav class="nav">
       <a class="marca" href="#"><img src="assets/logo.png" alt=""><b>MI EQUIPO <span>AL DÍA</span></b></a>
-      <div class="nav-d"><a class="btn miclub" id="miclub" href="#" hidden>Ir a mi equipo →</a><a class="btn btn-am" href="#probar">Quiero probarla</a></div>
+      <div class="nav-d"><a class="nav-l" href="#precios">Precios</a><a class="btn miclub" id="miclub" href="#" hidden>Ir a mi equipo →</a><a class="btn btn-am" href="#probar">Quiero probarla</a></div>
     </nav>
     <div class="hero-g">
       <div>
         <h1>Gestiona.<br>Dirige.<br><span>Gana.</span></h1>
-        <p>La pizarra del míster, ahora en el móvil. Lleva tu equipo de fútbol base al día sin papeles ni grupos de WhatsApp.</p>
+        <p>La pizarra del míster, ahora en el móvil. Tu liga se actualiza sola, los minutos se cuentan solos y las imágenes para redes salen en un toque.</p>
         <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-am" href="#probar">Quiero probarla →</a><a class="btn" href="/demo/" style="background:#ffffff1f;color:#fff;border:2px solid #ffffff66">👀 Ver la demo</a></div>
-        <div class="chips"><span>⚽ Fútbol base y aficionado</span><span>📲 Se instala como una app</span><span>🆓 Gratis en la fase de prueba</span></div>
+        <div class="chips"><span>⚽ Fútbol base y aficionado</span><span>📲 Se instala como una app</span><span>🎁 1 mes gratis, sin tarjeta</span></div>
       </div>
       <div><div class="ph"><img src="assets/cambios.webp" alt="Modo partido: cambios desde la banda"></div></div>
     </div>
@@ -153,12 +180,15 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
     <h2 class="tit">Todo lo que necesitas en la banda</h2>
     <p class="sub">Pensada por y para entrenadores y delegados. Lo de siempre, pero ordenado y en el bolsillo.</p>
     <div class="f">
-      <div class="fc"><div class="ic">📅</div><b>Calendario</b><span>Entrenos y partidos de la semana de un vistazo, con hora y campo.</span></div>
-      <div class="fc"><div class="ic">🏆</div><b>Clasificación</b><span>Tu liga siempre al día, con resultados y puntos de todos los equipos.</span></div>
+      <div class="fc"><div class="ic">🏆</div><b>Tu liga, sola</b><span>Clasificación, calendario, horarios y campos de la federación (RFAF), actualizados varias veces al día. Sin teclear nada.</span></div>
       <div class="fc"><div class="ic">📱</div><b>Modo partido</b><span>Goles, tarjetas y cambios por ventanas, apuntados desde la banda en segundos.</span></div>
-      <div class="fc"><div class="ic">⏱️</div><b>Minutos</b><span>Se calculan solos para cada jugador a partir de la alineación y los cambios.</span></div>
-      <div class="fc"><div class="ic">📊</div><b>Estadísticas</b><span>Goleadores, tarjetas, convocatorias y asistencia a entrenos.</span></div>
-      <div class="fc"><div class="ic">💸</div><b>Multas</b><span>Las cuentas del vestuario, claras y sin discusiones.</span></div>
+      <div class="fc"><div class="ic">⏱️</div><b>Minutos automáticos</b><span>Se calculan solos para cada jugador a partir de la alineación y los cambios.</span></div>
+      <div class="fc"><div class="ic">📸</div><b>Imágenes para redes</b><span>Previa, goles, descanso y final con los escudos y colores de cada equipo, listas para Instagram.</span></div>
+      <div class="fc"><div class="ic">📲</div><b>Directo al WhatsApp</b><span>Convocatoria, resultado y multas pendientes con un botón, listos para pegar en el grupo.</span></div>
+      <div class="fc"><div class="ic">👤</div><b>Ficha de cada jugador</b><span>Partidos, goles, tarjetas, asistencia a entrenos y multas de cada uno en una pantalla.</span></div>
+      <div class="fc"><div class="ic">📅</div><b>Calendario semanal</b><span>Entrenos y partidos de la semana de un vistazo, con hora, campo y asistencia.</span></div>
+      <div class="fc"><div class="ic">💸</div><b>Multas y cuentas</b><span>La caja del vestuario clara para todos: lo cobrado, lo pendiente y en qué se gasta.</span></div>
+      <div class="fc"><div class="ic">👥</div><b>Todo el cuerpo técnico</b><span>Entrenador, segundo y delegado gestionan juntos. Jugadores y familias lo ven sin cuenta.</span></div>
     </div>
   </div>
 </section>
@@ -169,7 +199,7 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
     <p class="sub">Diseñada para usarse con una mano, en el campo, con prisa y con frío.</p>
     <div class="tels">
       <figure><div class="ph"><img src="assets/cambios.webp" alt="Cambios" loading="lazy"></div><figcaption>CAMBIOS</figcaption></figure>
-      <figure><div class="ph"><img src="assets/gol.webp" alt="Gol" loading="lazy"></div><figcaption>GOLES</figcaption></figure>
+      <figure><div class="ph"><img src="assets/ficha.webp" alt="Ficha del jugador" loading="lazy"></div><figcaption>FICHA DEL JUGADOR</figcaption></figure>
       <figure><div class="ph"><img class="fit" src="assets/clasificacion.webp" alt="Clasificación" loading="lazy"></div><figcaption>CLASIFICACIÓN</figcaption></figure>
       <figure><div class="ph"><img class="fit" src="assets/calendario.webp" alt="Calendario" loading="lazy"></div><figcaption>CALENDARIO</figcaption></figure>
     </div>
@@ -181,10 +211,52 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
     <h2 class="tit">Cómo funciona</h2>
     <p class="sub">Cada equipo tiene su propia dirección. La abres una vez, la añades a tu pantalla de inicio y listo. <a href="/demo/" style="color:var(--verde);font-weight:700">Pruébala ahora con un equipo de ejemplo →</a></p>
     <div class="pasos">
-      <div class="paso"><b>Tu equipo, tu enlace</b><span>Te damos una dirección propia, por ejemplo <code>miequipoaldia.com/tuequipo</code>.</span></div>
-      <div class="paso"><b>Instálala en el móvil</b><span>Desde el navegador, “Añadir a pantalla de inicio”. Aparece con su icono, como cualquier app.</span></div>
-      <div class="paso"><b>Ábrela y a jugar</b><span>Entra directamente en tu equipo, sin buscarlo ni volver a iniciar sesión cada día.</span></div>
+      <div class="paso"><b>Pide tu acceso</b><span>Rellena el formulario. Te damos de alta y te llega un email para entrar en <code>miequipoaldia.com/tuequipo</code>.</span></div>
+      <div class="paso"><b>Déjala lista en 5 minutos</b><span>Sube tu escudo, pega la plantilla de golpe y el enlace de tu liga. La app te guía paso a paso.</span></div>
+      <div class="paso"><b>Instálala y compártela</b><span>“Añadir a pantalla de inicio” y aparece con el escudo de tu equipo. Pasa el enlace al grupo: jugadores y familias lo ven todo.</span></div>
     </div>
+  </div>
+</section>
+
+<section id="precios" class="precios">
+  <div class="wrap">
+    <h2 class="tit">Un precio de fútbol base</h2>
+    <p class="sub">Un solo pago por temporada, sin renovaciones automáticas ni letra pequeña. Lo puede pagar el míster, el club o la caja de multas.</p>
+    <div class="planes">
+      <div class="plan">
+        <b class="pn">Prueba</b>
+        <div class="pp">0 €<small>1 mes</small></div>
+        <ul class="lista2"><li>Todo incluido desde el primer día</li><li>Sin tarjeta ni compromiso</li><li>Si no te convence, no pagas nada</li></ul>
+      </div>
+      <div class="plan dest">
+        <span class="etq">Primeros 10 equipos</span>
+        <b class="pn">Fundador</b>
+        <div class="pp">25 €<small>la temporada</small></div>
+        <ul class="lista2"><li>Todo incluido hasta el 30 de junio</li><li>Precio especial por confiar desde el principio</li><li>Trato directo para proponer mejoras</li></ul>
+        <a class="btn btn-am" href="#probar">Quiero mi plaza →</a>
+      </div>
+      <div class="plan">
+        <b class="pn">Temporada</b>
+        <div class="pp">39 €<small>la temporada</small></div>
+        <ul class="lista2"><li>Todo incluido hasta el 30 de junio</li><li>Menos de 4 € al mes</li><li>Sin renovación automática</li></ul>
+      </div>
+    </div>
+    <p class="nota">Pago por Bizum o transferencia. Precio por equipo (si tu club tiene varios equipos, escríbenos).</p>
+  </div>
+</section>
+
+<section id="faq" class="faq">
+  <div class="wrap">
+    <h2 class="tit">Preguntas frecuentes</h2>
+    <div class="faqs">
+      <details><summary>¿Los jugadores y las familias necesitan cuenta?</summary><p>No. Abren el enlace de tu equipo y ven el calendario, la clasificación, las estadísticas y las cuentas. Solo el cuerpo técnico entra con email y contraseña para gestionar.</p></details>
+      <details><summary>¿Funciona con mi liga?</summary><p>Ahora mismo se conecta automáticamente con las competiciones de la Federación Andaluza de Fútbol (RFAF): clasificación, calendario, horarios y campos. Si tu equipo es de otra federación, escríbenos y lo vemos.</p></details>
+      <details><summary>¿Hay que descargar algo de la tienda de apps?</summary><p>No. Se abre desde el navegador y se instala en la pantalla de inicio en dos toques, en iPhone y Android. Funciona como una app, con el escudo de tu equipo como icono.</p></details>
+      <details><summary>¿Cuántas personas pueden gestionar el equipo?</summary><p>Hasta 6 del cuerpo técnico (entrenador, segundo, delegado, preparador…). El entrenador principal invita y quita accesos desde la propia app.</p></details>
+      <details><summary>¿Qué pasa cuando acaba el mes de prueba?</summary><p>Si quieres seguir, pagas la temporada y listo. Si no, la gestión se bloquea pero no se borra nada: si vuelves, todo sigue ahí.</p></details>
+      <details><summary>¿Y mis datos?</summary><p>Se guardan en servidores seguros y solo el cuerpo técnico de tu equipo puede cambiarlos. No los vendemos ni los usamos para nada más. Más detalle en la <a href="privacidad.html">política de privacidad</a>.</p></details>
+    </div>
+    <p class="nota">¿Otra duda? Escríbenos a <a href="mailto:miequipoaldia@gmail.com">miequipoaldia@gmail.com</a> o por <a href="https://www.instagram.com/miequipoaldia/" target="_blank" rel="noopener">Instagram</a>.</p>
   </div>
 </section>
 
@@ -194,9 +266,9 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
       <h2 class="tit">¿Quieres probarla con tu equipo?</h2>
       <p class="sub">Estamos abriendo la app a los primeros clubes. Déjanos tus datos y te escribimos para montarte tu equipo.</p>
       <ul class="lista">
-        <li>Te preparamos el equipo con tu plantilla</li>
-        <li>Calendario y clasificación de tu liga</li>
-        <li>Gratis durante la fase de prueba</li>
+        <li>Te damos de alta y te llega un email para entrar</li>
+        <li>Tu liga, tu plantilla y tu escudo en 5 minutos</li>
+        <li>1 mes gratis, sin tarjeta</li>
       </ul>
     </div>
     <form id="form" novalidate>
