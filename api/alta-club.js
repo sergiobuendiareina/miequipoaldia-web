@@ -3,6 +3,7 @@
 // y le da permisos de staff de ese club.
 // Variables de entorno en Vercel (proyecto miequipoaldia-web):
 //   SUPABASE_SECRET_KEY -> clave secreta de Supabase (sb_secret_...)
+const { lanzarSync } = require('./_sync')
 const SUPABASE_URL = 'https://orxdobcorsqejuecpouc.supabase.co'
 
 function cabeceras() {
@@ -107,5 +108,8 @@ module.exports = async (req, res) => {
     await rest(`/rest/v1/interesados?id=eq.${Number(b.interesado_id)}`, { method: 'PATCH', body: JSON.stringify({ club_slug: slug }) })
   }
 
-  return res.status(200).json({ ok: true, club: slug, enlace: `${origen}/${slug}`, invitado: inv.ok })
+  // 5) Liga: se sincroniza ya (clasificación, calendario y resultados en 2-3 minutos)
+  const sync = club.rfaf_clasificacion_url ? await lanzarSync(slug) : { ok: false, motivo: 'sin enlace de la federación' }
+
+  return res.status(200).json({ ok: true, club: slug, enlace: `${origen}/${slug}`, invitado: inv.ok, sincronizando: sync.ok, avisoSync: sync.ok ? null : sync.motivo })
 }
