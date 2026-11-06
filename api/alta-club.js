@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
     nombre: limpiar(b.nombre, 80),
     nombre_corto: limpiar(b.nombre_corto, 40) || limpiar(b.nombre, 40),
     nombre_grafico: limpiar(b.nombre, 80).toUpperCase(),
-    clave: (limpiar(b.clave, 40) || limpiar(b.nombre_corto, 40)).toLowerCase(),
+    clave: (limpiar(b.clave, 40) || limpiar(b.nombre_corto, 40)).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
     color: limpiar(b.color, 7) || '#1B7A43',
     emojis: limpiar(b.emojis, 12) || '⚪',
     hashtags: limpiar(b.hashtags, 160) || null,
@@ -67,6 +67,14 @@ module.exports = async (req, res) => {
     plan: 'prueba',
     prueba_hasta: new Date(Date.now() + diasPrueba * 86400000).toISOString().slice(0, 10),
     contacto_email: email,
+  }
+  // Normas de partido (vienen del formulario del interesado o del panel)
+  if (b.reglas && typeof b.reglas === 'object') {
+    const n = (v, x, z) => { const k = parseInt(v, 10); return k >= x && k <= z ? k : null }
+    const rg = { parte: n(b.reglas.parte, 10, 60), cambios: n(b.reglas.cambios, 1, 30), ventanas: n(b.reglas.ventanas, 1, 10), convocados: n(b.reglas.convocados, 7, 30) }
+    if (rg.ventanas) rg.ventanas_por = b.reglas.ventanas_por === 'parte' ? 'parte' : 'partido'
+    const limpio = Object.fromEntries(Object.entries(rg).filter(([, v]) => v))
+    if (Object.keys(limpio).length) club.reglas = limpio
   }
   if (!club.nombre) return res.status(400).json({ ok: false, error: 'Falta el nombre del club' })
 
