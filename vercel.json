@@ -21,12 +21,16 @@
       "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/:path+"
     },
     {
+      "source": "/:club([a-z0-9-]{2,40})/manifest.webmanifest",
+      "destination": "/api/manifest?club=:club"
+    },
+    {
       "source": "/:club([a-z0-9-]{2,40})/",
-      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+      "destination": "/api/pagina?club=:club"
     },
     {
       "source": "/:club([a-z0-9-]{2,40})",
-      "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
+      "destination": "/api/pagina?club=:club"
     }
   ],
   "headers": [
