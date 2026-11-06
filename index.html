@@ -172,6 +172,23 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
 .faqs a{color:var(--verde);font-weight:700}
 @media (max-width:900px){.planes{grid-template-columns:1fr}.plan.dest{transform:none}}
 @media (max-width:560px){.nav-l{display:none}.pp{font-size:54px}}
+.busca{background:var(--suave)}
+.busca .caja2{background:#fff;border-radius:20px;padding:22px;box-shadow:0 18px 40px #0e1b2e14;max-width:760px}
+.busca input{width:100%;font:500 17px Inter;padding:15px 16px;border:2px solid #D9E0EA;border-radius:14px}
+.busca .res{display:grid;gap:8px;margin-top:12px}
+.busca .eq2{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #E3E8EF;border-radius:12px;background:#fff;cursor:pointer;text-align:left;font:600 15px Inter;color:var(--tinta);width:100%}
+.busca .eq2:hover{border-color:var(--verde);background:var(--suave)}
+.busca .eq2 img,.tabla img{width:30px;height:30px;object-fit:contain}
+.busca .eq2 small{display:block;font-weight:500;color:var(--gris);font-size:13px}
+.busca .eq2 b{margin-left:auto;color:var(--verde);font-size:14px;white-space:nowrap}
+.tabla{margin-top:14px;border:1px solid #E3E8EF;border-radius:14px;overflow:hidden}
+.tabla h3{margin:0;padding:12px 14px;background:var(--verde);color:#fff;font:800 20px BCI;letter-spacing:.3px}
+.tabla .f{display:grid;grid-template-columns:28px 32px 1fr 40px 44px;align-items:center;gap:8px;padding:7px 12px;font-size:14px;border-top:1px solid #EEF1F5}
+.tabla .f.yo{background:#FFF6CC;font-weight:800}
+.tabla .f span:nth-child(4),.tabla .f span:nth-child(5){text-align:right;color:var(--gris)}
+.tabla .f.cab{font:700 11px Inter;letter-spacing:.06em;color:var(--gris);text-transform:uppercase;border-top:0}
+.tabla .cta{padding:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border-top:1px solid #EEF1F5}
+.tabla .cta p{margin:0;flex:1;min-width:200px;font-size:14px;color:var(--gris)}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -194,6 +211,18 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
     </div>
   </div>
 </header>
+
+<section id="tu-equipo" class="busca">
+  <div class="wrap">
+    <h2 class="tit">¿Está tu liga? Busca tu equipo</h2>
+    <p class="sub">Si tu liga ya está en la app, mira cómo quedaría la tuya: clasificación al día, sin registrarte.</p>
+    <div class="caja2">
+      <input id="bq" type="search" placeholder="Escribe el nombre de tu equipo…" autocomplete="off" aria-label="Nombre de tu equipo">
+      <div class="res" id="bres"></div>
+      <div id="btabla"></div>
+    </div>
+  </div>
+</section>
 
 <section id="funciones">
   <div class="wrap">
@@ -433,6 +462,25 @@ f.addEventListener('submit',async e=>{
     btn.disabled=false;btn.textContent='Quiero probarla →';
   }
 });
+
+// ---- Busca tu equipo ----
+(()=>{const q=document.getElementById('bq'),res=document.getElementById('bres'),tab=document.getElementById('btabla');let t,n=0;
+const e=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function buscar(v){const k=++n;if(v.trim().length<3){res.innerHTML='';return}
+  try{const d=await (await fetch('/api/buscar-equipo?q='+encodeURIComponent(v))).json();if(k!==n)return;
+    res.innerHTML=d.resultados?.length?d.resultados.map((r,i)=>`<button class="eq2" data-i="${i}">${r.escudo?`<img src="${e(r.escudo)}" alt="">`:'⚽'}<span>${e(r.equipo)}<small>${e(r.liga)} · ${r.posicion}º, ${r.pts} pts</small></span><b>${r.cliente?'Ya la usa →':'Ver →'}</b></button>`).join(''):'<div class="vacio">Tu liga todavía no está, pero la conectamos al darte de alta. <a href="#probar" style="color:var(--verde);font-weight:700">Pídela aquí →</a></div>';
+    res.querySelectorAll('.eq2').forEach(b=>b.onclick=()=>ver(d.resultados[b.dataset.i]))}catch(x){res.innerHTML='<div class="vacio">No se pudo buscar ahora.</div>'}}
+async function ver(r){if(r.cliente){location.href='/'+r.cliente+'/';return}
+  tab.innerHTML='<div class="vacio">Cargando…</div>';
+  const d=await (await fetch('/api/buscar-equipo?grupo='+r.grupo)).json();
+  tab.innerHTML=`<div class="tabla"><h3>${e(d.liga)}</h3><div class="f cab"><span>#</span><span></span><span>Equipo</span><span>PJ</span><span>Pts</span></div>${d.filas.map(f=>`<div class="f${f.equipo===r.equipo?' yo':''}"><span>${f.posicion}</span>${f.escudo_url?`<img src="${e(f.escudo_url)}" alt="">`:'<span></span>'}<span>${e(f.equipo)}</span><span>${f.pj??''}</span><span>${f.pts??''}</span></div>`).join('')}<div class="cta"><p>Así de al día estaría tu app, con tu calendario, tu plantilla, convocatorias y minutos. <b>1 mes gratis.</b></p><a class="btn btn-am" href="#probar" id="bquiero">Quiero la app de mi equipo →</a></div></div>`;
+  document.getElementById('bquiero').onclick=()=>{const cl=document.getElementById('club'),li=document.getElementById('liga'),fe=document.getElementById('federacion');
+    if(cl&&!cl.value)cl.value=r.equipo.replace(/\s*'[A-Z]'$/,'');if(li&&!li.value)li.value=d.liga;if(fe&&!fe.value)fe.value=d.federacion;
+    const m=r.equipo.match(/'([A-E])'$/),eq=document.getElementById('equipo');if(m&&eq&&!eq.value)eq.value=m[1]};
+  tab.scrollIntoView({behavior:'smooth',block:'nearest'})}
+q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>buscar(q.value),250)});
+const p=new URLSearchParams(location.search).get('equipo');if(p){q.value=p;buscar(p);setTimeout(()=>document.getElementById('tu-equipo').scrollIntoView(),300)}
+})();
 </script>
 </body>
 </html>
