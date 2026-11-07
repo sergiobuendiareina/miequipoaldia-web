@@ -35,6 +35,8 @@ module.exports = async (req, res) => {
     federacion: limpiar(b.federacion, 30) || null,
     liga: limpiar(b.liga, 120) || null,
     reglas: Object.values(reglas).some(Boolean) ? Object.fromEntries(Object.entries(reglas).filter(([, v]) => v)) : null,
+    // Club que lo ha recomendado (enlace ?ref=slug): 10% para él y 20% de su próxima temporada para quien invita
+    referido_por: typeof b.ref === 'string' && /^[a-z0-9-]{2,40}$/.test(b.ref) ? b.ref : null,
   }
   if (!fila.nombre || !fila.club || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fila.email)) {
     return res.status(400).json({ ok: false, error: 'Datos incompletos' })
@@ -46,6 +48,11 @@ module.exports = async (req, res) => {
     body: JSON.stringify(datos),
   })
   let r = await guardar({ ...fila, ...extra })
+  if (!r.ok && extra.referido_por) {
+    console.log('Sin columna referido_por:', r.status)
+    const { referido_por, ...sinRef } = extra
+    r = await guardar({ ...fila, ...sinRef })
+  }
   if (!r.ok) {
     console.log('Sin columnas nuevas en interesados:', r.status, (await r.text()).slice(0, 160))
     r = await guardar({ ...fila, club: fila.club + (extra.equipo && extra.equipo !== 'Único' ? ` ${extra.equipo}` : '') })
@@ -62,6 +69,7 @@ module.exports = async (req, res) => {
       `Federación: ${extra.federacion || '-'}`,
       `Liga: ${extra.liga || '-'}`,
       `Normas: ${extra.reglas ? [extra.reglas.parte && `partes de ${extra.reglas.parte}'`, extra.reglas.cambios ? `${extra.reglas.cambios} cambios` : 'cambios ilimitados', extra.reglas.ventanas && `${extra.reglas.ventanas} ventanas (${extra.reglas.ventanas_por === 'parte' ? 'por parte' : 'en el partido'})`, extra.reglas.convocados && `máx. ${extra.reglas.convocados} convocados`].filter(Boolean).join(', ') : '-'}`,
+      `Invitado por: ${extra.referido_por ? `/${extra.referido_por} (10% en su primera temporada)` : '-'}`,
       `Categoría: ${fila.categoria || '-'}`,
       `Rol: ${fila.rol || '-'}`,
       `Email: ${fila.email}`,

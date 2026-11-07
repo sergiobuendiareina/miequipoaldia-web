@@ -110,6 +110,7 @@ form .btn{width:100%;margin-top:6px}
 .aviso{font-size:12.5px;color:var(--gris);margin:12px 0 0;line-height:1.4}
 .ok{display:none;text-align:center;padding:30px 10px}
 .ok h3{font-size:40px;color:var(--verde);margin-bottom:8px}
+.invita{margin-top:16px;background:#FFF7D6;border:1px solid #F2D675;color:#5c4700;border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.4}
 .err{color:#C0362C;font-weight:700;font-size:14px;margin-top:10px;display:none}
 .lista{list-style:none;padding:0;margin:0}
 .lista li{padding:10px 0 10px 34px;position:relative;font-size:17px}
@@ -319,6 +320,7 @@ footer{background:#0b1524;color:#c9d3df;padding:50px 0 30px}
         <li>Tu liga, tu plantilla y tu escudo en 5 minutos</li>
         <li>1 mes gratis, sin tarjeta</li>
       </ul>
+      <div class="invita" id="invita" hidden></div>
     </div>
     <form id="form" novalidate>
       <div id="campos">
@@ -435,6 +437,12 @@ const f=document.getElementById('form'),err=document.getElementById('err'),btn=d
 // Ejemplos orientativos según la categoría (solo de pista: no se envían si no los escriben)
 const EJ={'Prebenjamín':[20,12],'Benjamín':[25,14],'Alevín':[30,16],'Infantil':[35,18],'Cadete':[40,18],'Juvenil':[45,18],'Senior / Aficionado':[45,18],'Fútbol sala':[20,12]};
 document.getElementById('categoria').addEventListener('change',e=>{const v=EJ[e.target.value];if(!v)return;document.getElementById('r_parte').placeholder='Ej.: '+v[0];document.getElementById('r_convocados').placeholder='Ej.: '+v[1]});
+// Recomendación: ?ref=slug-del-club que invita (se recuerda aunque navegue por la web)
+let REF=null;
+try{const q=new URLSearchParams(location.search).get('ref');if(q&&/^[a-z0-9-]{2,40}$/.test(q)){localStorage.setItem('mead_ref',q)}REF=localStorage.getItem('mead_ref')}catch(x){}
+if(REF){fetch(SUPABASE_URL+'/rest/v1/clubes?select=nombre&slug=eq.'+encodeURIComponent(REF),{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}})
+  .then(r=>r.json()).then(d=>{if(!d||!d[0]){REF=null;return}const b=document.getElementById('invita');b.hidden=false;
+  b.innerHTML='🤝 <b>Te invita '+d[0].nombre.replace(/[<>&]/g,'')+'</b>: tienes un <b>10% de descuento</b> en tu primera temporada.'}).catch(()=>{})}
 f.addEventListener('submit',async e=>{
   e.preventDefault();err.style.display='none';
   const d=Object.fromEntries(new FormData(f));
@@ -448,7 +456,7 @@ f.addEventListener('submit',async e=>{
     const num=k=>{const n=parseInt(d[k],10);return n>0?n:null};
     const reglas={parte:num('r_parte'),cambios:num('r_cambios'),ventanas:num('r_ventanas'),convocados:num('r_convocados')};
     if(reglas.ventanas)reglas.ventanas_por=d.r_ventanas_por||'partido';
-    const extra={equipo:d.equipo||null,federacion:d.federacion||null,liga:(d.liga||'').trim()||null,reglas:Object.values(reglas).some(Boolean)?reglas:null};
+    const extra={equipo:d.equipo||null,federacion:d.federacion||null,liga:(d.liga||'').trim()||null,reglas:Object.values(reglas).some(Boolean)?reglas:null,ref:REF};
     let r=await fetch('/api/apuntarse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...fila,...extra})}).catch(()=>null);
     if(!r||(!r.ok&&r.status!==400)){ // plan B: guardar directamente
       r=await fetch(SUPABASE_URL+'/rest/v1/interesados',{method:'POST',

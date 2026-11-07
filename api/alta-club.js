@@ -78,6 +78,8 @@ module.exports = async (req, res) => {
   }
   if (!club.nombre) return res.status(400).json({ ok: false, error: 'Falta el nombre del club' })
 
+  // Club que lo recomendó (viene del interesado): se guarda para el descuento de la recomendación
+  if (typeof b.referido_por === 'string' && /^[a-z0-9-]{2,40}$/.test(b.referido_por) && b.referido_por !== slug) club.referido_por = b.referido_por
   const creado = await rest('/rest/v1/clubes', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(club) })
   if (!creado.ok) {
     const msg = JSON.stringify(creado.datos)
