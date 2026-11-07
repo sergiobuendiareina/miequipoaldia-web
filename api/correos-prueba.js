@@ -1,8 +1,8 @@
 // Correos automáticos durante el mes de prueba (lo lanza Vercel cada mañana).
-//   bienvenida  -> al día siguiente del alta: 3 cosas para la primera semana
-//   sin_uso     -> a los 4 días, si todavía no ha apuntado nada: ofrecer ayuda
+// (La bienvenida es la invitación que ya sale al dar de alta el club.)
+//   sin_uso     -> si ningún entrenador ha abierto la app en una semana: ofrecer ayuda
 //   quedan7     -> cuando quedan 7 días o menos: lo que lleva hecho + cómo pagar
-//   terminada   -> en los 3 días siguientes al final de la prueba: sus datos siguen ahí
+//   ultimo_dia  -> el último día: si no paga, no podrá entrar hasta que Sergio marque el pago
 // Cada correo sale una sola vez por club (se apunta en clubes.correos).
 // Variables de entorno en Vercel:
 //   RESEND_API_KEY    -> para enviar
@@ -20,16 +20,10 @@ function plantilla(tipo, c, d) {
   const url = `https://www.miequipoaldia.com/${c.slug}/`
   const quien = c.nombre_corto || c.nombre
   const firma = '\n\nUn saludo,\nSergio\nMi Equipo Al Día\n\n(Si tienes cualquier duda, responde a este correo: me llega a mí.)'
-  if (tipo === 'bienvenida') {
-    return {
-      asunto: `${quien}: 3 cosas para tu primera semana con la app`,
-      texto: `Hola, míster:\n\nYa tienes la app de ${c.nombre} lista en ${url}\n\nPara sacarle partido desde la primera semana:\n\n1. Pasa lista en el próximo entreno: tocas solo a quien falta y el resto queda como presente.\n2. Haz la convocatoria del partido: verás quién ha entrenado, las amarillas y las sanciones de cada jugador.\n3. Pon el once tocando los huecos del campo y, el día del partido, usa el Modo partido para apuntar goles, tarjetas y cambios. Los minutos se calculan solos.\n\nConsejo: añade la app a la pantalla de inicio del móvil (en el navegador, «Compartir» → «Añadir a pantalla de inicio») para tenerla como una app más.${firma}`,
-    }
-  }
   if (tipo === 'sin_uso') {
     return {
       asunto: `¿Te ayudo a arrancar con la app de ${quien}?`,
-      texto: `Hola, míster:\n\nHe visto que todavía no has podido apuntar nada en la app de ${c.nombre}. Es normal: al principio cuesta encontrar el momento.\n\nSi quieres, contéstame a este correo con lo que más te cueste (la plantilla, los entrenos, la convocatoria…) y te lo dejo preparado yo. Y si prefieres verlo primero, en la demo puedes tocar todo sin miedo: https://www.miequipoaldia.com/demo/\n\nTu app: ${url}${firma}`,
+      texto: `Hola, míster:\n\nHe visto que llevas unos días sin entrar en la app de ${c.nombre}. Es normal: al principio cuesta encontrar el momento.\n\nSi quieres, contéstame a este correo con lo que más te cueste (la plantilla, los entrenos, la convocatoria…) y te lo dejo preparado yo. Y si prefieres verlo primero, en la demo puedes tocar todo sin miedo: https://www.miequipoaldia.com/demo/\n\nTu app: ${url}${firma}`,
     }
   }
   if (tipo === 'quedan7') {
@@ -44,10 +38,11 @@ function plantilla(tipo, c, d) {
       texto: `Hola, míster:\n\nTu mes de prueba de ${c.nombre} termina el ${new Date(c.prueba_hasta).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.\n\n${hecho.length ? `En este mes llevas ${hecho.join(', ')}. ` : ''}Para seguir usándola toda la temporada es un único pago de ${precio.texto} hasta el 30 de junio, sin renovaciones automáticas${precio.nota ? ` (${precio.nota})` : ''}.\n\nPuedes pagar desde la propia app con el botón «Pagar temporada»: ${url}\n\nSi no sigues, la parte pública (inicio, liga y equipo) sigue funcionando y no se borra nada.${firma}`,
     }
   }
-  if (tipo === 'terminada') {
+  if (tipo === 'ultimo_dia') {
+    const cuando = d.quedan === 0 ? 'hoy' : 'mañana'
     return {
-      asunto: `Tu prueba de ${quien} ha terminado (tus datos siguen ahí)`,
-      texto: `Hola, míster:\n\nTu mes de prueba de ${c.nombre} ha terminado. No se ha borrado nada: jugadores, partidos, entrenos y estadísticas siguen guardados.\n\nPara volver a gestionarlo todo, paga la temporada desde la app (${d.precio.texto}, hasta el 30 de junio): ${url}\n\nSi hay algo que te ha frenado o que echas en falta, cuéntamelo respondiendo a este correo. Me ayuda mucho.${firma}`,
+      asunto: `${cuando === 'hoy' ? 'Hoy' : 'Mañana'} termina tu prueba de ${quien}`,
+      texto: `Hola, míster:\n\n${cuando === 'hoy' ? 'Hoy es el último día' : 'Mañana es el último día'} de tu mes de prueba de ${c.nombre}.\n\nSi no se ha pagado la temporada, a partir de entonces no podrás entrar a gestionar el equipo (jugadores, partidos, entrenos, convocatorias…) hasta que confirme tu pago. No se borra nada: en cuanto lo active, lo tienes todo como lo dejaste.\n\nEs un único pago de ${d.precio.texto} hasta el 30 de junio${d.precio.nota ? ` (${d.precio.nota})` : ''}. Lo tienes en la app, botón «Pagar temporada»: ${url}${firma}`,
     }
   }
   return null
@@ -82,16 +77,18 @@ module.exports = async (req, res) => {
 
     let tipo = null
     let d = {}
-    if (quedan < 0 && quedan >= -3 && !ya[clave('terminada')]) tipo = 'terminada'
-    else if (quedan >= 1 && quedan <= 7 && !ya[clave('quedan7')]) tipo = 'quedan7'
-    else if (desdeAlta >= 4 && quedan > 7 && !ya[clave('sin_uso')]) {
-      const usado = (await contar('asistencia_entrenos', c.id, 'entreno_id')) + (await contar('convocatorias', c.id, 'partido_id'))
-      if (!usado) tipo = 'sin_uso'
+    if (quedan >= 0 && quedan <= 1 && !ya[clave('ultimo_dia')]) tipo = 'ultimo_dia'
+    else if (quedan >= 2 && quedan <= 7 && !ya[clave('quedan7')]) tipo = 'quedan7'
+    else if (desdeAlta >= 7 && quedan > 7 && !ya[clave('sin_uso')]) {
+      // Las visitas se apuntan desde el 7-11-2026: antes del 14 solo cuentan los clubes nuevos
+      const fiable = hoy() >= new Date('2026-11-14') || c.created_at >= '2026-11-07'
+      const st = await rest(`/rest/v1/staff?select=ultima_visita&club_id=eq.${c.id}`)
+      const ultima = (Array.isArray(st.datos) ? st.datos : []).map((x) => x.ultima_visita).filter(Boolean).sort().pop()
+      if (fiable && st.ok && (!ultima || dias(hoy(), new Date(ultima.slice(0, 10))) >= 7)) tipo = 'sin_uso'
     }
-    if (!tipo && desdeAlta >= 1 && desdeAlta <= 3 && !ya[clave('bienvenida')]) tipo = 'bienvenida'
     if (!tipo) continue
 
-    if (tipo === 'quedan7' || tipo === 'terminada') {
+    if (tipo === 'quedan7' || tipo === 'ultimo_dia') {
       const pct = c.referido_por ? 10 : 0
       const final = Math.round(base * (100 - pct)) / 100
       d = {
