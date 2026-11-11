@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/clasificacion",
+      "destination": "/api/liga"
+    },
+    {
+      "source": "/clasificacion/:l",
+      "destination": "/api/liga?l=:l"
+    },
+    {
       "source": "/demo/",
       "destination": "https://juvenil-a-marianistas.vercel.app/marianistas/index.html"
     },
