@@ -1,3 +1,4 @@
+// (No es una función de Vercel por sí sola: la sirve api/buscar-equipo.js para no pasar del límite de 12 del plan gratis)
 // Páginas públicas de clasificación para Google (SEO):
 //   /clasificacion            -> índice de las ligas que ya sincroniza la app
 //   /clasificacion/<liga>     -> clasificación, última jornada y llamada a probar la app
@@ -133,3 +134,12 @@ ${filas.map((f) => `<tr><td>${v(f.posicion)}</td><td class="eq"><span>${f.escudo
   }))
 }
 module.exports.ligas = ligas
+
+// /sitemap.xml: portada + páginas de clasificación
+module.exports.sitemap = async (req, res) => {
+  const hoy = new Date().toISOString().slice(0, 10)
+  const urls = [`${WEB}/`, `${WEB}/clasificacion`, ...(await ligas().catch(() => [])).map((l) => `${WEB}/clasificacion/${l.slug}`)]
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+  res.setHeader('Cache-Control', 'public, s-maxage=3600')
+  res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${hoy}</lastmod><changefreq>weekly</changefreq></url>`).join('\n')}\n</urlset>\n`)
+}

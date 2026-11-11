@@ -2,15 +2,15 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "destination": "/api/buscar-equipo?vista=sitemap"
     },
     {
       "source": "/clasificacion",
-      "destination": "/api/liga"
+      "destination": "/api/buscar-equipo?vista=liga"
     },
     {
       "source": "/clasificacion/:l",
-      "destination": "/api/liga?l=:l"
+      "destination": "/api/buscar-equipo?vista=liga&l=:l"
     },
     {
       "source": "/demo/",

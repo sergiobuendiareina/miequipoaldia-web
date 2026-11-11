@@ -2,6 +2,8 @@
 // ya sincroniza la app y devuelve el grupo con el equipo para enseñarlo sin registrarse.
 //   GET ?q=texto           -> equipos que coinciden
 //   GET ?grupo=<club_id>   -> clasificación completa de ese grupo
+//   GET ?vista=liga[&l=]   -> páginas HTML /clasificacion (ver _liga.js)
+//   GET ?vista=sitemap     -> /sitemap.xml
 const SUPABASE_URL = 'https://orxdobcorsqejuecpouc.supabase.co'
 const OCULTOS = ['prueba', 'demo']
 
@@ -13,7 +15,12 @@ async function rest(ruta) {
   return r.ok ? r.json() : []
 }
 
+const liga = require('./_liga')
+
 module.exports = async (req, res) => {
+  // Esta misma función sirve también las páginas de clasificación y el sitemap (límite de 12 funciones en Vercel)
+  if (req.query.vista === 'liga') return liga(req, res)
+  if (req.query.vista === 'sitemap') return liga.sitemap(req, res)
   if (!process.env.SUPABASE_SECRET_KEY) return res.status(500).json({ ok: false })
   res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=3600')
   const clubes = (await rest('clubes?select=id,slug,nombre,competicion,estado,rfaf_clasificacion_url')).filter((c) => !OCULTOS.includes(c.slug) && c.estado !== 'suspendido')
