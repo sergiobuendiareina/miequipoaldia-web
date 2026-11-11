@@ -3,6 +3,9 @@
 //   sin_uso     -> si ningún entrenador ha abierto la app en una semana: ofrecer ayuda
 //   quedan7     -> cuando quedan 7 días o menos: lo que lleva hecho + cómo pagar
 //   ultimo_dia  -> el último día: si no paga, no podrá entrar hasta que Sergio marque el pago
+//   invita      -> desde el día 10, si lo están usando: su enlace para invitar a otro míster (10 % para el
+//                  invitado, 20 % para ellos por cada club que pague). Empieza el 16-11-2026.
+// Nunca se manda más de un correo al mismo club en 3 días.
 // Cada correo sale una sola vez por club (se apunta en clubes.correos).
 // Variables de entorno en Vercel:
 //   RESEND_API_KEY    -> para enviar
@@ -43,6 +46,13 @@ function plantilla(tipo, c, d) {
     return {
       asunto: `${cuando === 'hoy' ? 'Hoy' : 'Mañana'} termina tu prueba de ${quien}`,
       texto: `Hola, míster:\n\n${cuando === 'hoy' ? 'Hoy es el último día' : 'Mañana es el último día'} de tu mes de prueba de ${c.nombre}.\n\nSi no se ha pagado la temporada, a partir de entonces no podrás entrar a gestionar el equipo (jugadores, partidos, entrenos, convocatorias…) hasta que confirme tu pago. No se borra nada: en cuanto lo active, lo tienes todo como lo dejaste.\n\nEs un único pago de ${d.precio.texto} hasta el 30 de junio${d.precio.nota ? ` (${d.precio.nota})` : ''}. Lo tienes en la app, botón «Pagar temporada»: ${url}${firma}`,
+    }
+  }
+  if (tipo === 'invita') {
+    const enlace = `https://www.miequipoaldia.com/?ref=${c.slug}#probar`
+    return {
+      asunto: `¿Conoces a otro míster? Os ahorráis los dos`,
+      texto: `Hola, míster:\n\nVeo que le estás sacando partido a la app de ${c.nombre}, ¡me alegra mucho!\n\nSi conoces a otro entrenador (de tu club o de otro) al que le pueda venir bien, pásale tu enlace:\n${enlace}\n\nÉl tiene su mes gratis y un 10 % en su primera temporada, y tú un 20 % de descuento en tu próxima temporada por cada club que se apunte y pague (con 5, te sale gratis).\n\nTambién lo tienes en la app, en el apartado «Mi club» (botón «Invita a otro club»), para mandarlo directamente por WhatsApp.${firma}`,
     }
   }
   return null
@@ -86,7 +96,16 @@ module.exports = async (req, res) => {
       const ultima = (Array.isArray(st.datos) ? st.datos : []).map((x) => x.ultima_visita).filter(Boolean).sort().pop()
       if (fiable && st.ok && (!ultima || dias(hoy(), new Date(ultima.slice(0, 10))) >= 7)) tipo = 'sin_uso'
     }
+    else if (desdeAlta >= 10 && quedan > 7 && !ya[clave('invita')] && hoy() >= new Date('2026-11-16')) {
+      // Solo a quien la está usando (algún entrenador ha entrado en los últimos 5 días)
+      const st = await rest(`/rest/v1/staff?select=ultima_visita&club_id=eq.${c.id}`)
+      const ultima = (Array.isArray(st.datos) ? st.datos : []).map((x) => x.ultima_visita).filter(Boolean).sort().pop()
+      if (st.ok && ultima && dias(hoy(), new Date(ultima.slice(0, 10))) <= 5) tipo = 'invita'
+    }
     if (!tipo) continue
+    // No atosigar: si ya le llegó otro correo hace menos de 3 días, se deja para otro día (salvo el último día)
+    const ultimoEnvio = Object.values(ya).filter((x) => typeof x === 'string').sort().pop()
+    if (tipo !== 'ultimo_dia' && ultimoEnvio && dias(hoy(), new Date(ultimoEnvio.slice(0, 10))) < 3) continue
 
     if (tipo === 'quedan7' || tipo === 'ultimo_dia') {
       const pct = c.referido_por ? 10 : 0
