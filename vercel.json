@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/funciones",
+      "destination": "/funciones/index.html"
+    },
+    {
+      "source": "/funciones/",
+      "destination": "/funciones/index.html"
+    },
+    {
+      "source": "/funciones/:p([a-z-]+)",
+      "destination": "/funciones/:p.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/buscar-equipo?vista=sitemap"
     },

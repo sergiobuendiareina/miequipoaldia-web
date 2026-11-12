@@ -1,0 +1,34 @@
+# Mi Equipo Al Día
+
+> App web para entrenadores y delegados de fútbol base y aficionado en España. Reúne en el móvil la convocatoria, el partido, los minutos y estadísticas de cada jugador, las imágenes para redes, las multas y la caja del equipo, y la clasificación y el calendario de la federación, que se actualizan solos. Prueba de 1 mes gratis sin tarjeta; después 39 € por temporada y equipo (25 € para los primeros equipos fundadores), sin renovación automática. Hecha en Jerez de la Frontera (Cádiz).
+
+## Para quién es
+- Entrenadores, segundos entrenadores y delegados de equipos de fútbol base (prebenjamín a juvenil) y aficionado/senior.
+- Clubes que quieren que sus entrenadores lleven el equipo al día sin papeles ni hojas de Excel.
+- Jugadores y familias ven el equipo con un enlace, sin crear cuenta.
+
+## Qué hace
+- Convocatoria en un minuto, con aviso de jugadores sancionados y de quién está a una amarilla del ciclo, y envío al grupo de WhatsApp.
+- Modo partido: goles, tarjetas y cambios por ventanas apuntados desde la banda; tiempo añadido.
+- Minutos jugados calculados automáticamente a partir de la alineación y los cambios.
+- Ficha de cada jugador: partidos, minutos, goles, tarjetas, asistencia a entrenos y multas.
+- Imágenes del partido para redes sociales (previa, gol, descanso y final) con los escudos de los equipos.
+- Multas del vestuario y caja del equipo: lo cobrado, lo pendiente y los gastos.
+- Liga federada conectada: clasificación, calendario, horarios, campos y sanciones del Comité, actualizados varias veces al día. Hoy conecta con la Federación Andaluza (RFAF) y la Valenciana (FFCV); otras federaciones se conectan bajo petición.
+- Informe del rival y calendario semanal de entrenos y partidos.
+- Se instala como app (PWA) en iPhone y Android desde el navegador; hasta 6 personas del cuerpo técnico por equipo.
+
+## Páginas
+- [Inicio](https://www.miequipoaldia.com/): presentación, precios y preguntas frecuentes
+- [Funciones](https://www.miequipoaldia.com/funciones/)
+- [Convocatoria](https://www.miequipoaldia.com/funciones/convocatoria)
+- [Estadísticas y minutos](https://www.miequipoaldia.com/funciones/estadisticas)
+- [Modo partido](https://www.miequipoaldia.com/funciones/modo-partido)
+- [Imágenes para redes](https://www.miequipoaldia.com/funciones/imagenes-redes)
+- [Multas y caja](https://www.miequipoaldia.com/funciones/multas)
+- [Clasificaciones de liga](https://www.miequipoaldia.com/clasificacion)
+- [Demo con un equipo de ejemplo](https://www.miequipoaldia.com/demo/)
+
+## Contacto
+- Email: miequipoaldia@gmail.com
+- Instagram y TikTok: @miequipoaldia
