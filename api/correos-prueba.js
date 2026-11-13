@@ -1,4 +1,6 @@
 // Correos automáticos durante el mes de prueba (lo lanza Vercel cada mañana).
+//   bienvenida  -> la primera vez que un entrenador ha entrado: cómo ponerla en la pantalla de inicio (con fotos),
+//                  pasar el enlace al grupo y estrenar convocatoria/Modo partido. Solo clubes dados de alta desde el 11-11-2026.
 // (La bienvenida es la invitación que ya sale al dar de alta el club.)
 //   sin_uso     -> si ningún entrenador ha abierto la app en una semana: ofrecer ayuda
 //   quedan7     -> cuando quedan 7 días o menos: lo que lleva hecho + cómo pagar
@@ -48,6 +50,35 @@ function plantilla(tipo, c, d) {
       texto: `Hola, míster:\n\n${cuando === 'hoy' ? 'Hoy es el último día' : 'Mañana es el último día'} de tu mes de prueba de ${c.nombre}.\n\nSi no se ha pagado la temporada, a partir de entonces no podrás entrar a gestionar el equipo (jugadores, partidos, entrenos, convocatorias…) hasta que confirme tu pago. No se borra nada: en cuanto lo active, lo tienes todo como lo dejaste.\n\nEs un único pago de ${d.precio.texto} hasta el 30 de junio${d.precio.nota ? ` (${d.precio.nota})` : ''}. Lo tienes en la app, botón «Pagar temporada»: ${url}${firma}`,
     }
   }
+  if (tipo === 'bienvenida') {
+    const IMG = 'https://www.miequipoaldia.com/assets/correo'
+    const texto = `Hola, míster:\n\n¡Bienvenido a Mi Equipo Al Día! Ya estás dentro de la app de ${c.nombre}. Te dejo tres cosas para arrancar con buen pie:\n\n1) Ponla en la pantalla de inicio de tu móvil, así la abres como una app más (con el escudo del equipo):\n   · iPhone (Safari): botón Compartir (el cuadrado con la flecha) → «Añadir a pantalla de inicio».\n   · Android (Chrome): los tres puntos ⋮ arriba a la derecha → «Añadir a pantalla de inicio» o «Instalar aplicación».\n   Te adjunto las fotos paso a paso.\n\n2) Pasa el enlace del equipo al grupo de WhatsApp: jugadores y familias ven el calendario, la clasificación y las estadísticas sin crear cuenta. ${url}\n\n3) Prueba la convocatoria del próximo partido y, el día del partido, el Modo partido: goles, tarjetas y cambios desde la banda, y los minutos se cuentan solos.${firma}`
+    const p = (t) => `<p style="margin:0 0 14px">${t}</p>`
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#0E1B2E;max-width:620px">
+${p('Hola, míster:')}
+${p(`¡Bienvenido a <b>Mi Equipo Al Día</b>! Ya estás dentro de la app de <b>${c.nombre}</b>. Te dejo tres cosas para arrancar con buen pie:`)}
+<h3 style="margin:22px 0 8px;font-size:19px">1. Ponla en la pantalla de inicio de tu móvil</h3>
+${p('Así la abres como una app más, con el escudo del equipo. Son tres toques:')}
+<p style="margin:0 0 6px"><b>📱 iPhone (Safari):</b> botón Compartir (el cuadrado con la flecha ↑) → «Añadir a pantalla de inicio».</p>
+<img src="${IMG}/instalar-iphone.jpg" alt="Pasos para añadir la app a la pantalla de inicio en iPhone" width="600" style="width:100%;max-width:600px;border-radius:12px;margin:6px 0 18px;display:block">
+<p style="margin:0 0 6px"><b>🤖 Android (Chrome):</b> los tres puntos ⋮ arriba a la derecha → «Añadir a pantalla de inicio» o «Instalar aplicación».</p>
+<img src="${IMG}/instalar-android.jpg" alt="Pasos para añadir la app a la pantalla de inicio en Android" width="600" style="width:100%;max-width:600px;border-radius:12px;margin:6px 0 18px;display:block">
+<h3 style="margin:22px 0 8px;font-size:19px">2. Pasa el enlace al grupo del equipo</h3>
+${p(`Jugadores y familias ven el calendario, la clasificación y las estadísticas sin crear cuenta: <a href="${url}" style="color:#1B7A43;font-weight:bold">${url}</a>`)}
+<h3 style="margin:22px 0 8px;font-size:19px">3. Estrénala este fin de semana</h3>
+${p('Haz la convocatoria del próximo partido y, el día del partido, usa el Modo partido: goles, tarjetas y cambios desde la banda, y los minutos se cuentan solos.')}
+${p('Un saludo,<br>Sergio<br>Mi Equipo Al Día')}
+<p style="margin:18px 0 0;font-size:13px;color:#5B6B7F">Si tienes cualquier duda, responde a este correo: me llega a mí.</p></div>`
+    return {
+      asunto: `Bienvenido a la app de ${quien} 👋`,
+      texto,
+      html,
+      adjuntos: [
+        { path: `${IMG}/instalar-iphone.jpg`, filename: 'instalar-en-iphone.jpg' },
+        { path: `${IMG}/instalar-android.jpg`, filename: 'instalar-en-android.jpg' },
+      ],
+    }
+  }
   if (tipo === 'invita') {
     const enlace = `https://www.miequipoaldia.com/?ref=${c.slug}#probar`
     return {
@@ -87,7 +118,12 @@ module.exports = async (req, res) => {
 
     let tipo = null
     let d = {}
-    if (quedan >= 0 && quedan <= 1 && !ya[clave('ultimo_dia')]) tipo = 'ultimo_dia'
+    if (!ya[clave('bienvenida')] && c.created_at >= '2026-11-11' && quedan > 1) {
+      // Bienvenida: en cuanto algún entrenador del club ha entrado por primera vez
+      const st = await rest(`/rest/v1/staff?select=ultima_visita&club_id=eq.${c.id}`)
+      if (st.ok && (Array.isArray(st.datos) ? st.datos : []).some((x) => x.ultima_visita)) tipo = 'bienvenida'
+    }
+    if (tipo) { /* la bienvenida va primero */ } else if (quedan >= 0 && quedan <= 1 && !ya[clave('ultimo_dia')]) tipo = 'ultimo_dia'
     else if (quedan >= 2 && quedan <= 7 && !ya[clave('quedan7')]) tipo = 'quedan7'
     else if (desdeAlta >= 7 && quedan > 7 && !ya[clave('sin_uso')]) {
       // Las visitas se apuntan desde el 7-11-2026: antes del 14 solo cuentan los clubes nuevos
@@ -105,7 +141,7 @@ module.exports = async (req, res) => {
     if (!tipo) continue
     // No atosigar: si ya le llegó otro correo hace menos de 3 días, se deja para otro día (salvo el último día)
     const ultimoEnvio = Object.values(ya).filter((x) => typeof x === 'string').sort().pop()
-    if (tipo !== 'ultimo_dia' && ultimoEnvio && dias(hoy(), new Date(ultimoEnvio.slice(0, 10))) < 3) continue
+    if (tipo !== 'ultimo_dia' && tipo !== 'bienvenida' && ultimoEnvio && dias(hoy(), new Date(ultimoEnvio.slice(0, 10))) < 3) continue
 
     if (tipo === 'quedan7' || tipo === 'ultimo_dia') {
       const pct = c.referido_por ? 10 : 0
@@ -124,7 +160,7 @@ module.exports = async (req, res) => {
     const envio = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${(process.env.RESEND_API_KEY || '').trim()}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: remitente, to: [para], reply_to: RESPONDER, subject: asunto, text: m.texto }),
+      body: JSON.stringify({ from: remitente, to: [para], reply_to: RESPONDER, subject: asunto, text: m.texto, ...(m.html ? { html: m.html } : {}), ...(m.adjuntos ? { attachments: m.adjuntos } : {}) }),
     })
     if (!envio.ok) {
       enviados.push({ club: c.slug, tipo, error: `${envio.status} ${(await envio.text()).slice(0, 120)}` })
